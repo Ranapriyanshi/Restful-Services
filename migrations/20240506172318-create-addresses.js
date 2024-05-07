@@ -9,6 +9,11 @@ module.exports = {
         primaryKey: true,
         type: Datatypes.INTEGER
       },
+      uuid: {
+        type: Datatypes.UUID,
+        allowNull: false,
+        defaultValue: Datatypes.UUIDV4
+      },
       name: {
         type: Datatypes.STRING,
         allowNull: false
@@ -24,11 +29,6 @@ module.exports = {
       country: {
         type: Datatypes.STRING,
         allowNull: false
-      },
-      uuid: {
-        type: Datatypes.UUID,
-        allowNull: false,
-        defaultValue: Datatypes.UUIDV4
       },
       userId: {
         type: Datatypes.UUID,
