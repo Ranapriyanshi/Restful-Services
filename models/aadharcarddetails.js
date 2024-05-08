@@ -4,21 +4,25 @@ const {
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class AadharCardDetails extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
-    static associate(models) {
-      // define association here
-    }
   }
   AadharCardDetails.init({
-    uuid: DataTypes.UUID,
-    aadharNumber: DataTypes.STRING,
-    name: DataTypes.STRING
+    uuid: {
+      type: DataTypes.UUID,
+      primaryKey: true,
+      allowNull: false,
+      defaultValue: DataTypes.UUIDV4
+    },
+    aadharNumber: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    }
   }, {
     sequelize,
+    tableName: 'aadhar_card_details',
     modelName: 'AadharCardDetails',
   });
   return AadharCardDetails;

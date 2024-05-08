@@ -2,36 +2,24 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Datatypes) {
-    await queryInterface.createTable('addresses', {
+    await queryInterface.createTable('aadhar_card_details', {
       id: {
         allowNull: false,
         autoIncrement: true,
         type: Datatypes.INTEGER
       },
       uuid: {
-        primaryKey: true,
         type: Datatypes.UUID,
+        primaryKey: true,
         allowNull: false,
         defaultValue: Datatypes.UUIDV4
       },
+      aadharNumber: {
+        type: Datatypes.INTEGER,
+        allowNull: false,
+      },
       name: {
         type: Datatypes.STRING,
-        allowNull: false
-      },
-      street: {
-        type: Datatypes.STRING,
-        allowNull: false
-      },
-      city: {
-        type: Datatypes.STRING,
-        allowNull: false
-      },
-      country: {
-        type: Datatypes.STRING,
-        allowNull: false
-      },
-      userId: {
-        type: Datatypes.UUID,
         allowNull: false,
       },
       createdAt: {
@@ -45,6 +33,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Datatypes) {
-    await queryInterface.dropTable('addresses');
+    await queryInterface.dropTable('aadhar_card_details');
   }
 };

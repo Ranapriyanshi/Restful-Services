@@ -3,21 +3,15 @@ const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class Users extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
+  class User extends Model {
     static associate({Addresses}) {
-      // define association here
       this.hasMany(Addresses,{foreignKey:'userId',as : 'addresses'})
     }
     toJSON(){
       return { ...this.get(), id: undefined }
     }
   }
-  Users.init({
+  User.init({
     uuid:{
       primaryKey: true,
       autoIncrement: true,
@@ -30,13 +24,16 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false
     },
     country_code:{
-      type: DataTypes.STRING,
+      type: DataTypes.INTEGER,
       allowNull: false
+    },
+    aadharId:{
+      type: DataTypes.STRING,
     }
   }, {
     sequelize,
     tableName: 'users',
     modelName: 'Users',
   });
-  return Users;
+  return User;
 };

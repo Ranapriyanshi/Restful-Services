@@ -1,6 +1,6 @@
 const express = require("express");
 
-const { sequelize, Users, Addresses } = require("./models");
+const { sequelize, Users, Addresses, AadharCardDetails } = require("./models");
 const { where } = require("sequelize");
 
 const app = express();
@@ -71,6 +71,46 @@ app.delete("/users/:id", async (req, resp) => {
     if (!user) return resp.status(404).json({ message: "User not found" });
     await user.destroy();
     return resp.status(204).json();
+  } catch (err) {
+    console.error(err);
+    return resp.status(500).json({ message: "Server error" });
+  }
+});
+
+// Create Aadhar for a User
+app.post("/users/:id/aadhar", async (req, resp) => {
+  const { aadharNumber, name } = req.body;
+  const user_uuid = req.params.id;
+  try {
+    const user = await Users.findOne({ where: { uuid: user_uuid } });
+    if (!user) return resp.status(404).json({ message: "User not found" });
+    const aadhar = await AadharCardDetails.create({
+      aadharNumber,
+      name,
+    });
+    const aadharId = await aadhar.uuid;
+    await user.set({ aadharId });
+    await user.save();
+    return resp.status(201).json(aadhar);
+  } catch (err) {
+    console.error(err);
+    return resp.status(500).json({ message: "Server error" });
+  }
+});
+
+// Fetch Aadhar of a User
+app.get("/users/:id/aadhar", async (req, resp) => {
+  const uuid = req.params.id;
+  try {
+    const user = await Users.findOne({ where: { uuid } });
+    if (!user) return resp.status(404).json({ message: "User not found" });
+    const aadhar = user.aadharId;
+    if (aadhar == null)
+      return resp.status(404).json({ message: "Aadhar not found" });
+    const aadharDetails = await AadharCardDetails.findOne({
+      where: { uuid: aadhar },
+    });
+    return resp.status(200).json(aadharDetails);
   } catch (err) {
     console.error(err);
     return resp.status(500).json({ message: "Server error" });
@@ -153,8 +193,6 @@ app.put("/users/:userId/addresses/:addressId", async (req, resp) => {
     return resp.status(500).json({ message: "Server error" });
   }
 });
-
-
 
 app.listen(5000, async () => {
   console.log("Server is running on http://localhost:5000");

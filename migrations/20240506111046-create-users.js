@@ -6,10 +6,10 @@ module.exports = {
       id: {
         allowNull: false,
         autoIncrement: true,
-        primaryKey: true,
         type: DataTypes.INTEGER
       },
       uuid:{
+        primaryKey: true,
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
         allowNull: false
@@ -19,8 +19,11 @@ module.exports = {
         allowNull: false
       },
       country_code: {
-        type: DataTypes.STRING,
+        type: DataTypes.INTEGER,
         allowNull: false
+      },
+      aadharId:{
+        type: DataTypes.STRING,
       },
       createdAt: {
         allowNull: false,
