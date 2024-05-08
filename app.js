@@ -154,9 +154,10 @@ app.put("/users/:userId/addresses/:addressId", async (req, resp) => {
   }
 });
 
+
+
 app.listen(5000, async () => {
   console.log("Server is running on http://localhost:5000");
   await sequelize.authenticate();
   console.log("Database connected!");
-  console.log("Testing!")
 });
