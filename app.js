@@ -104,46 +104,7 @@ app.get("/users/:id/aadhar", async (req, resp) => {
   try {
     const user = await Users.findOne({ where: { uuid } });
     if (!user) return resp.status(404).json({ message: "User not found" });
-    const aadhar = user.aadharId;
-    if (aadhar == null)
-      return resp.status(404).json({ message: "Aadhar not found" });
-    const aadharDetails = await AadharCardDetails.findOne({
-      where: { uuid: aadhar },
-    });
-    return resp.status(200).json(aadharDetails);
-  } catch (err) {
-    console.error(err);
-    return resp.status(500).json({ message: "Server error" });
-  }
-});
 
-// Create new Address for a user
-app.post("/users/:id/addresses", async (req, resp) => {
-  const { name, street, city, country } = req.body;
-  const user_uuid = req.params.id;
-  try {
-    const user = await Users.findOne({ where: { uuid: user_uuid } });
-    const address = await Addresses.create({
-      name,
-      street,
-      city,
-      country,
-      userId: user.uuid,
-    });
-    return resp.status(201).json(address);
-  } catch (err) {
-    console.error(err);
-    return resp.status(500).json({ message: "Server error" });
-  }
-});
-
-// Fetch all Addresses of a User
-app.get("/users/:id/addresses", async (req, resp) => {
-  const uuid = req.params.id;
-  try {
-    const addresses = await Addresses.findAll({ where: { userId: uuid } });
-    if (addresses.length === 0)
-      return resp.status(404).json({ message: "Addresses not found" });
 
     return resp.status(200).json(addresses);
   } catch (err) {
