@@ -105,7 +105,48 @@ app.get("/users/:id/aadhar", async (req, resp) => {
     const user = await Users.findOne({ where: { uuid } });
     if (!user) return resp.status(404).json({ message: "User not found" });
 
+    const aadhar = await AadharCardDetails.findOne({
+      where: { uuid: user.aadharId },
+    });
+    return resp.status(200).json(aadhar);
+  } catch (err) {
+    console.error(err);
+    return resp.status(500).json({ message: "Server error" });
+  }
+});
 
+// Create Address for a User
+app.post("/users/:id/addresses", async (req, resp) => {
+  const { name, street, city, country } = req.body;
+  if (!name || !street || !city || !country)
+    return resp
+      .status(400)
+      .json({ message: "Name, street, city and country are required" });
+  const userId = req.params.id;
+  try {
+    const user = await Users.findOne({ where: { uuid: userId } });
+    if (!user) return resp.status(404).json({ message: "User not found" });
+    const address = await Addresses.create({
+      name,
+      street,
+      city,
+      country,
+      userId,
+    });
+    return resp.status(201).json(address);
+  } catch (err) {
+    console.error(err);
+    return resp.status(500).json({ message: "Server error" });
+  }
+});
+
+// Fetch all Addresses of a User
+app.get("/users/:id/addresses", async (req, resp) => {
+  const userId = req.params.id;
+  try {
+    const user = await Users.findOne({ where: { uuid: userId } });
+    if (!user) return resp.status(404).json({ message: "User not found" });
+    const addresses = await Addresses.findAll({ where: { userId } });
     return resp.status(200).json(addresses);
   } catch (err) {
     console.error(err);

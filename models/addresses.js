@@ -1,7 +1,7 @@
 "use strict";
 const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
-  class Addresses extends Model {
+  class Address extends Model {
     static associate({ Users }) {
       this.belongsTo(Users, { foreignKey: "userId", as: "user" });
     }
@@ -9,7 +9,7 @@ module.exports = (sequelize, DataTypes) => {
       return { ...this.get(), id: undefined };
     }
   }
-  Addresses.init(
+  Address.init(
     {
       uuid: {
         type: DataTypes.UUID,
@@ -45,5 +45,5 @@ module.exports = (sequelize, DataTypes) => {
       modelName: "Addresses",
     }
   );
-  return Addresses;
+  return Address;
 };
