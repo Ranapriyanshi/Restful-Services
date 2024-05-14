@@ -7,6 +7,8 @@ const {
   AadharCardDetails,
   Roles,
   UserRoles,
+  Image,
+  Comment,
 } = require("./models");
 const { where } = require("sequelize");
 
@@ -252,7 +254,7 @@ app.put("/users/:userId/roles", async (req, resp) => {
   const user = await Users.findOne({ where: { uuid: userId } });
   if (!user) return resp.status(404).json({ message: "User not found" });
   try {
-    for(const roleId of roles_to_delete){
+    for (const roleId of roles_to_delete) {
       await UserRoles.destroy({ where: { userId, roleId } });
     }
     return resp.status(200).json("Roles deleted successfully");
@@ -261,6 +263,61 @@ app.put("/users/:userId/roles", async (req, resp) => {
   } catch (err) {
     console.error(err);
     return resp.status(500).json({ message: "Server error" });
+  }
+});
+
+// Create Image
+app.post("/images", async (req, resp) => {
+  const { url, height, width } = req.body;
+  if (!url || !height || !width)
+    return resp
+      .status(400)
+      .json({ message: "URL, height and width are required" });
+  try {
+    const image = await Image.create({ url, height, width });
+    return resp.status(201).json(image);
+  } catch (err) {
+    console.error(err);
+    return resp.status(500).json({ message: "Server error" });
+  }
+});
+
+// Create comment for an Image
+app.post("/images/:id/comments", async (req, resp) => {
+  const { id } = req.params;
+  const { text } = req.body;
+  try {
+    const image = await Image.findByPk(id);
+    if (!image) {
+      return resp.status(404).json({ error: "Image not found" });
+    }
+    const comment = await Comment.create({
+      text,
+      commentableType: "image",
+      commentableId: id,
+    });
+    resp.status(201).json(comment);
+  } catch (error) {
+    resp.status(500).json({ error: error.message });
+  }
+});
+
+// Fetch all comments of an Image
+app.get("/images/:id/comments", async (req, resp) => {
+  const { id } = req.params;
+  try {
+    const image = await Image.findByPk(id);
+    if (!image) {
+      return resp.status(404).json({ error: "Image not found" });
+    }
+    const comments = await Comment.findAll({
+      where: { commentableType: "image", commentableId: id },
+    });
+    if (!comments.length)
+      return resp.status(404).json({ error: "No comments found" });
+    resp.status(200).json(comments);
+  } catch (error) {
+    resp.status(500).json({ error: error.message });
   }
 });
 
