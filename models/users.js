@@ -4,8 +4,9 @@ const {
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
-    static associate({Addresses}) {
+    static associate({Addresses, AadharCardDetails}) {
       this.hasMany(Addresses,{foreignKey:'userId',as : 'addresses'})
+      this.belongsTo(AadharCardDetails,{foreignKey:'aadharId',as : 'aadhar_card_details'})
     }
   }
   User.init({

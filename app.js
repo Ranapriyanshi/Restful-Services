@@ -217,16 +217,19 @@ app.get("/user_roles", async (req, resp) => {
 });
 
 // Add roles to a user
-app.post("/users/:userId/roles/:roleId", async (req, resp) => {
+app.post("/users/:userId/roles", async (req, resp) => {
   const userId = req.params.userId;
-  const roleId = req.params.roleId;
+  const rolesToAdd = req.body.rolesToAdd;
   const user = await Users.findOne({ where: { uuid: userId } });
   if (!user) return resp.status(404).json({ message: "User not found" });
-  const role = await Roles.findOne({ where: { uuid: roleId } });
-  if (!role) return resp.status(404).json({ message: "Role not found" });
+
   try {
-    const user_role = await UserRoles.create({ userId, roleId });
-    return resp.status(201).json(user_role);
+    for (const roleId of rolesToAdd) {
+      const role = await Roles.findOne({ where: { uuid: roleId } });
+      if (!role) return resp.status(404).json({ message: "Role not found" });
+      await UserRoles.create({ userId, roleId });
+    }
+    return resp.status(201).json("Roles added successfully");
   } catch (err) {
     console.error(err);
     return resp.status(500).json({ message: "Server error" });
