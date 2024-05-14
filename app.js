@@ -1,6 +1,13 @@
 const express = require("express");
 
-const { sequelize, Users, Addresses, AadharCardDetails } = require("./models");
+const {
+  sequelize,
+  Users,
+  Addresses,
+  AadharCardDetails,
+  Roles,
+  UserRoles,
+} = require("./models");
 const { where } = require("sequelize");
 
 const app = express();
@@ -115,7 +122,7 @@ app.get("/users/:id/aadhar", async (req, resp) => {
   }
 });
 
-// Create Address for a User
+// Create Addresses for a User
 app.post("/users/:id/addresses", async (req, resp) => {
   const { name, street, city, country } = req.body;
   if (!name || !street || !city || !country)
@@ -154,7 +161,7 @@ app.get("/users/:id/addresses", async (req, resp) => {
   }
 });
 
-// Fetch Specific Address of a User
+// Fetch Specific Addresses of a User
 app.get("/users/:userId/addresses/:addressId", async (req, resp) => {
   const { userId, addressId } = req.params;
 
@@ -165,7 +172,7 @@ app.get("/users/:userId/addresses/:addressId", async (req, resp) => {
       where: { uuid: addressId, userId: userId },
     });
     if (!address)
-      return resp.status(404).json({ message: "Address not found" });
+      return resp.status(404).json({ message: "Addresses not found" });
     return resp.status(200).json(address);
   } catch (err) {
     console.error(err);
@@ -173,7 +180,7 @@ app.get("/users/:userId/addresses/:addressId", async (req, resp) => {
   }
 });
 
-// Update specific Address for a User
+// Update specific Addresses for a User
 app.put("/users/:userId/addresses/:addressId", async (req, resp) => {
   const { userId, addressId } = req.params;
   const { name, street, city, country } = req.body;
@@ -186,10 +193,71 @@ app.put("/users/:userId/addresses/:addressId", async (req, resp) => {
     if (!user) return resp.status(404).json({ message: "User not found" });
     const address = await Addresses.findOne({ where: { uuid: addressId } });
     if (!address)
-      return resp.status(404).json({ message: "Address not found" });
+      return resp.status(404).json({ message: "Addresses not found" });
     address.set({ name, street, city, country });
     await address.save();
     return resp.status(200).json(address);
+  } catch (err) {
+    console.error(err);
+    return resp.status(500).json({ message: "Server error" });
+  }
+});
+
+// get All roles
+app.get("/user_roles", async (req, resp) => {
+  try {
+    const roles = await Roles.findAll();
+    return resp.status(200).json(roles);
+  } catch (err) {
+    console.error(err);
+    return resp.status(500).json({ message: "Server error" });
+  }
+});
+
+// Add roles to a user
+app.post("/users/:userId/roles/:roleId", async (req, resp) => {
+  const userId = req.params.userId;
+  const roleId = req.params.roleId;
+  const user = await Users.findOne({ where: { uuid: userId } });
+  if (!user) return resp.status(404).json({ message: "User not found" });
+  const role = await Roles.findOne({ where: { uuid: roleId } });
+  if (!role) return resp.status(404).json({ message: "Role not found" });
+  try {
+    const user_role = await UserRoles.create({ userId, roleId });
+    return resp.status(201).json(user_role);
+  } catch (err) {
+    console.error(err);
+    return resp.status(500).json({ message: "Server error" });
+  }
+});
+
+// Fetch all Roles of a User
+app.get("/users/:userId/roles", async (req, resp) => {
+  const userId = req.params.userId;
+  try {
+    const user = await Users.findOne({ where: { uuid: userId } });
+    if (!user) return resp.status(404).json({ message: "User not found" });
+    const roles = await UserRoles.findAll({ where: { userId } });
+    return resp.status(200).json(roles);
+  } catch (err) {
+    console.error(err);
+    return resp.status(500).json({ message: "Server error" });
+  }
+});
+
+// Delete some roles of a User
+app.put("/users/:userId/roles", async (req, resp) => {
+  const userId = req.params.userId;
+  const roles_to_delete = req.body.roleToDelete;
+  const user = await Users.findOne({ where: { uuid: userId } });
+  if (!user) return resp.status(404).json({ message: "User not found" });
+  try {
+    for(const roleId of roles_to_delete){
+      await UserRoles.destroy({ where: { userId, roleId } });
+    }
+    return resp.status(200).json("Roles deleted successfully");
+    // const roles = await UserRoles.findAll({ where: { userId } });
+    // return resp.status(200).json(roles);
   } catch (err) {
     console.error(err);
     return resp.status(500).json({ message: "Server error" });

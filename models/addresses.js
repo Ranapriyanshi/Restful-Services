@@ -5,9 +5,6 @@ module.exports = (sequelize, DataTypes) => {
     static associate({ Users }) {
       this.belongsTo(Users, { foreignKey: "userId", as: "user" });
     }
-    toJSON() {
-      return { ...this.get(), id: undefined };
-    }
   }
   Address.init(
     {

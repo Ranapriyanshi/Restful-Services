@@ -3,11 +3,6 @@
 module.exports = {
   async up(queryInterface, Datatypes) {
     await queryInterface.createTable('aadhar_card_details', {
-      id: {
-        allowNull: false,
-        autoIncrement: true,
-        type: Datatypes.INTEGER
-      },
       uuid: {
         type: Datatypes.UUID,
         primaryKey: true,
@@ -15,7 +10,7 @@ module.exports = {
         defaultValue: Datatypes.UUIDV4
       },
       aadharNumber: {
-        type: Datatypes.INTEGER,
+        type: Datatypes.BIGINT,
         allowNull: false,
       },
       name: {

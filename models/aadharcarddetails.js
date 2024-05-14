@@ -4,6 +4,8 @@ const {
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class AadharCardDetails extends Model {
+    static associate(models) {
+    }
   }
   AadharCardDetails.init({
     uuid: {
@@ -13,7 +15,7 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: DataTypes.UUIDV4
     },
     aadharNumber: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.BIGINT,
       allowNull: false,
     },
     name: {

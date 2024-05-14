@@ -3,11 +3,6 @@
 module.exports = {
   async up(queryInterface, Datatypes) {
     await queryInterface.createTable('addresses', {
-      id: {
-        allowNull: false,
-        autoIncrement: true,
-        type: Datatypes.INTEGER
-      },
       uuid: {
         primaryKey: true,
         type: Datatypes.UUID,
