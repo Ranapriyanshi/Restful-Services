@@ -2,23 +2,23 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, DataTypes) {
-    await queryInterface.createTable("images", {
+    await queryInterface.createTable("comments", {
       id: {
         type: DataTypes.UUID,
-        primaryKey: true,
         allowNull: false,
         defaultValue: DataTypes.UUIDV4,
+        primaryKey: true,
       },
-      url: {
+      text: {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      height: {
-        type: DataTypes.INTEGER,
+      commentableType: {
+        type: DataTypes.STRING,
         allowNull: false,
       },
-      width: {
-        type: DataTypes.INTEGER,
+      commentableId: {
+        type: DataTypes.UUID,
         allowNull: false,
       },
       createdAt: {
@@ -32,6 +32,6 @@ module.exports = {
     });
   },
   async down(queryInterface, DataTypes) {
-    await queryInterface.dropTable("images");
+    await queryInterface.dropTable("comments");
   },
 };

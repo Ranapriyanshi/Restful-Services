@@ -1,9 +1,17 @@
 "use strict";
 const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
-  class Image extends Model {
-    static associate({ Comment }) {
-      this.hasMany(Comment, {
+  class Comment extends Model {
+    static associate({ Video, Image }) {
+      // define association here
+      this.belongsTo(Video, {
+        foreignKey: "commentableId",
+        constraints: false,
+        scope: {
+          commentableType: "video",
+        },
+      });
+      this.belongsTo(Image, {
         foreignKey: "commentableId",
         constraints: false,
         scope: {
@@ -12,32 +20,32 @@ module.exports = (sequelize, DataTypes) => {
       });
     }
   }
-  Image.init(
+  Comment.init(
     {
       id: {
         type: DataTypes.UUID,
-        primaryKey: true,
         allowNull: false,
         defaultValue: DataTypes.UUIDV4,
+        primaryKey: true,
       },
-      url: {
+      text: {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      height: {
-        type: DataTypes.INTEGER,
+      commentableType: {
+        type: DataTypes.STRING,
         allowNull: false,
       },
-      width: {
-        type: DataTypes.INTEGER,
+      commentableId: {
+        type: DataTypes.UUID,
         allowNull: false,
       },
     },
     {
       sequelize,
-      tableName: "images",
-      modelName: "Image",
+      tableName: "comments",
+      modelName: "Comment",
     }
   );
-  return Image;
+  return Comment;
 };
